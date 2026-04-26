@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flashcards QCM Droit</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar" aria-label="Paramètres d'entraînement">
+        <div class="brand">
+          <p class="eyebrow">Révision active</p>
+          <h1>Flashcards QCM Droit</h1>
+          <p id="deckSummary" class="deck-summary">Chargement...</p>
+        </div>
+
+        <details class="settings-drawer" id="settingsDrawer" open>
+          <summary>Filtres et options</summary>
+
+          <section class="panel">
+            <div class="panel-title">Chapitres</div>
+            <div id="chapterFilters" class="chapter-list"></div>
+            <div class="mini-actions">
+              <button id="allChaptersButton" type="button">Tout</button>
+              <button id="noChaptersButton" type="button">Aucun</button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <label class="field">
+              <span>Source</span>
+              <select id="sourceFilter"></select>
+            </label>
+
+            <label class="field">
+              <span>Recherche</span>
+              <input id="searchInput" type="search" autocomplete="off" placeholder="Question, option, cours">
+            </label>
+
+            <label class="field">
+              <span>Mode</span>
+              <select id="modeFilter">
+                <option value="all">Toutes les cartes</option>
+                <option value="unseen">Jamais tentées</option>
+                <option value="wrong">Erreurs</option>
+                <option value="review">A revoir</option>
+                <option value="known">Acquises</option>
+                <option value="bookmarked">Favoris</option>
+                <option value="without-note">Sans rappel fiable</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Difficulté</span>
+              <select id="difficultyFilter">
+                <option value="all">Toutes</option>
+                <option value="Facile">Facile</option>
+                <option value="Moyen">Moyen</option>
+                <option value="Difficile">Difficile</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Nombre de questions</span>
+              <select id="limitFilter">
+                <option value="all">Toutes</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+              </select>
+            </label>
+          </section>
+
+          <section class="panel">
+            <div class="panel-title">Options</div>
+            <label class="switch"><input id="instantCorrectionToggle" type="checkbox" checked> Correction immédiate</label>
+            <label class="switch"><input id="shuffleOptionsToggle" type="checkbox"> Mélanger les options</label>
+            <label class="switch"><input id="darkModeToggle" type="checkbox"> Mode sombre</label>
+            <label class="switch"><input id="compactModeToggle" type="checkbox"> Mode compact</label>
+          </section>
+        </details>
+
+        <section class="stats panel" aria-label="Progression">
+          <div class="stats-row">
+            <span id="statusText">0 acquises - 0 à revoir</span>
+            <span id="percentText">0%</span>
+          </div>
+          <progress id="progressBar" max="100" value="0"></progress>
+          <div id="chapterStats" class="chapter-stats"></div>
+        </section>
+      </aside>
+
+      <section class="study-panel" aria-live="polite">
+        <header class="topbar">
+          <nav class="tabs" aria-label="Vues">
+            <button class="tab active" data-tab="train" type="button">Entraînement</button>
+            <button class="tab" data-tab="dashboard" type="button">Score</button>
+            <button class="tab" data-tab="list" type="button">Liste</button>
+          </nav>
+          <div class="session-strip">
+            <span id="counterText">0 / 0</span>
+            <span id="sessionScoreText">Score 0/0</span>
+            <span id="timerText">00:00</span>
+          </div>
+        </header>
+
+        <section id="trainView" class="view active">
+          <article class="flashcard">
+            <header class="card-heading">
+              <div>
+                <div class="source-title" id="sourceTitle"></div>
+                <div class="card-meta-line" id="sourceText"></div>
+              </div>
+              <div class="badges" id="badgeList"></div>
+            </header>
+
+            <h2 id="questionText"></h2>
+            <p id="answerHint" class="answer-hint"></p>
+            <ol class="options" id="optionsList"></ol>
+
+            <section class="feedback" id="feedbackBox" hidden>
+              <div id="feedbackTitle" class="feedback-title"></div>
+              <p id="answerNote"></p>
+            </section>
+
+            <details class="course-note" id="courseNoteBox">
+              <summary class="course-note-title">Voir la justification</summary>
+              <p id="courseNoteText"></p>
+              <p class="course-note-source" id="courseNoteSource"></p>
+            </details>
+          </article>
+
+          <footer class="actions">
+            <button id="previousButton" type="button">Précédente</button>
+            <button id="submitButton" class="primary" type="button">Valider</button>
+            <button id="nextButton" type="button">Suivante</button>
+            <button id="bookmarkButton" type="button">Favori</button>
+            <button id="reviewButton" type="button">A revoir</button>
+            <button id="knownButton" type="button">Acquise</button>
+          </footer>
+        </section>
+
+        <section id="dashboardView" class="view">
+          <div class="dashboard-grid">
+            <article class="metric"><span>Score session</span><strong id="dashSessionScore">0%</strong></article>
+            <article class="metric"><span>Score global</span><strong id="dashGlobalScore">0%</strong></article>
+            <article class="metric"><span>Série actuelle</span><strong id="dashStreak">0</strong></article>
+            <article class="metric"><span>Meilleure série</span><strong id="dashBestStreak">0</strong></article>
+            <article class="metric"><span>Questions tentées</span><strong id="dashAttempts">0</strong></article>
+            <article class="metric"><span>Erreurs à revoir</span><strong id="dashWrong">0</strong></article>
+          </div>
+          <div class="panel wide">
+            <div class="panel-title">Progression par chapitre</div>
+            <div id="dashboardChapters" class="dashboard-chapters"></div>
+          </div>
+          <div class="toolbar">
+            <button id="newSessionButton" type="button">Nouvelle session</button>
+            <button id="exportButton" type="button">Exporter progression</button>
+            <label class="import-button">Importer progression<input id="importInput" type="file" accept="application/json"></label>
+            <button id="resetButton" type="button">Réinitialiser</button>
+          </div>
+          <textarea id="exportText" class="export-text" readonly hidden></textarea>
+        </section>
+
+        <section id="listView" class="view">
+          <div class="toolbar">
+            <button id="shuffleButton" type="button">Mélanger</button>
+            <button id="sortDefaultButton" type="button">Ordre normal</button>
+            <button id="wrongOnlyButton" type="button">Mes erreurs</button>
+            <button id="printButton" type="button">Imprimer</button>
+          </div>
+          <div id="cardList" class="card-list"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="flashcards-data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
